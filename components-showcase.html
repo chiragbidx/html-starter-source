@@ -1575,7 +1575,15 @@
   function initFormValidation() {
     const form = document.getElementById('validation-form');
     if (!form) return;
-    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValidEmail = (email) => {
+      if (!email || email.includes(' ')) return false;
+      const parts = email.split('@');
+      if (parts.length !== 2) return false;
+      const local = parts[0];
+      const domain = parts[1];
+      if (!local || !domain || domain.startsWith('.') || domain.endsWith('.')) return false;
+      return domain.includes('.');
+    };
     function validateField(input) {
       const rules = (input.dataset.validate || '').split(',').map((r) => r.trim());
       const value = input.value.trim();
@@ -1587,7 +1595,7 @@
           error = 'This field is required.';
           break;
         }
-        if (rule === 'email' && value && !emailRe.test(value)) {
+        if (rule === 'email' && value && !isValidEmail(value)) {
           error = 'Please enter a valid email address.';
           break;
         }
